@@ -1,5 +1,6 @@
 function setup() {
 	createCanvas(windowWidth, windowHeight);
+	var r1 = new MyResolution();
 	myScreenResolution();
 }
 
@@ -8,9 +9,11 @@ function draw() {
 	drawFlag();
 }
 
-/** Prints the resolution of the display. */
-function myScreenResolution() {
-	print("Resolution: " + displayWidth + "*" + displayHeight);
+class MyResolution {
+	/** Prints the resolution of the display. */
+	myScreenResolution() {
+		print("Resolution: " + displayWidth + " * " + displayHeight);
+	}
 }
 
 function drawFlag() {
