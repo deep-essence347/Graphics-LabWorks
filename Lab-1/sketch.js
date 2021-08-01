@@ -1,7 +1,7 @@
 function setup() {
 	createCanvas(windowWidth, windowHeight);
 	var r1 = new MyResolution();
-	myScreenResolution();
+	r1.myScreenResolution();
 }
 
 function draw() {
@@ -62,8 +62,8 @@ function drawSun() {
 
 /**
  *
- * @param {Number} x -Starting x co-ordinate
- * @param {Number} y Starting y co-ordinate
+ * @param {Number} x x co-ordinate of the center
+ * @param {Number} y y co-ordinate of the center
  * @param {Number} innerRadius Radius of Inner edges
  * @param {Number} outerRadius Radius of Outer edges
  * @param {Number} count Number of edges
