@@ -27,13 +27,13 @@ class Slope {
 	slope() {
 		this.dx = this.x2 - this.x1;
 		this.dy = this.y2 - this.y1;
-		this.m = this.dy / this.dx;
+		this.m = abs(this.dy / this.dx);
 	}
 
 	writeCoordinate(x, y) {
 		textSize(16);
 		textStyle(NORMAL);
-		text("(" + x + "," + y + ")", x + 8, y - 8);
+		text("(" + x + ", " + y + ")", x + 8, y - 8);
 	}
 }
 
@@ -122,14 +122,12 @@ class BresenhamLine extends Slope {
 	}
 
 	initialCalculations() {
-		this.del_x = this.x2 - this.x1;
-		this.del_y = this.y2 - this.y1;
-		this.twice_delX = 2 * this.del_x;
-		this.twice_delY = 2 * this.del_y;
-		this.tdymdx = this.twice_delY - this.del_x;
-		this.tdxmdy = this.twice_delX - this.del_y;
-		if (this.m >= 1) this.p0 = this.tdxmdy;
-		else this.p0 = this.tdymdx;
+		this.twice_delX = 2 * this.dx;
+		this.twice_delY = 2 * this.dy;
+		let tdymdx = this.twice_delY - this.dx;
+		let tdxmdy = this.twice_delX - this.dy;
+		if (this.m >= 1) this.p0 = tdxmdy;
+		else this.p0 = tdymdx;
 	}
 
 	constructLine() {
@@ -138,8 +136,8 @@ class BresenhamLine extends Slope {
 		let y = this.y;
 
 		let count = 0;
-		if (this.m >= 1) count = this.del_y;
-		else count = this.del_x;
+		if (this.m >= 1) count = this.dy;
+		else count = this.dx;
 
 		for (var k = 0; k < count; k++) {
 			if (p_i < 0) {
