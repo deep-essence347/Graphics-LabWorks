@@ -6,16 +6,16 @@ function draw() {
 	background(220);
 
 	/** Digital Differential Analyzer */
-	var ddaLine = new DDALine(100, 60, 360, 190);
-	ddaLine.drawLine();
+	// var ddaLine = new DDALine(100, 60, 360, 190);
+	// ddaLine.drawLine();
 
 	/** Bresenham Line Drawing Algorithm */
-	var bresenhamLine1 = new BresenhamLine(160, 120, 365, 300);
-	bresenhamLine1.drawLine();
-	var bresenhamLine2 = new BresenhamLine(160, 204, 380, 458);
-	bresenhamLine2.drawLine();
+	// var bresenhamLine1 = new BresenhamLine(160, 120, 365, 300);
+	// bresenhamLine1.drawLine();
+	// var bresenhamLine2 = new BresenhamLine(160, 204, 380, 458);
+	// bresenhamLine2.drawLine();
 
-	/** Mid-Point Line Drawing Algorithm */
+	// /** Mid-Point Line Drawing Algorithm */
 	var mpLine1 = new MPLine(50, 70, 200, 320);
 	mpLine1.drawLine();
 	var mpLine2 = new MPLine(100, 120, 290, 210);

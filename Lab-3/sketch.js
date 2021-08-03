@@ -7,6 +7,8 @@ function draw() {
 
 	let circle = new MPCircle(200, 200, 111);
 	circle.drawCircle();
+	let ellipse = new MPEllipse(250, 250, 140, 90);
+	ellipse.drawEllipse();
 }
 
 function isFloat(n) {
@@ -99,15 +101,91 @@ class MPEllipse extends SymmetricPoints {
 		this.r_y = r_y;
 	}
 
+	drawEllipse() {
+		strokeWeight(3);
+		this.setR1();
+		this.drawR1();
+		this.setR2();
+		this.drawR2();
+		this.writeCoordinate(this.x_c, this.y_c, this.r_x, this.r_y);
+	}
+
 	setR1() {
 		this.x = 0;
 		this.y = this.r_y;
-		this.p1_0 = sq(this.r_y) - sq(this.r_x) * this.r_y + (1 / 4) * sq(this.r_x);
+		this.sq_rx = sq(this.r_x);
+		this.sq_ry = sq(this.r_y);
+		this.p1_0 = this.sq_ry - this.sq_rx * this.r_y + (1 / 4) * this.sq_rx;
 	}
 
 	drawR1() {
 		let x = this.x;
 		let y = this.y;
 		let p1_k = this.p1_0;
+
+		let try2x = 2 * this.sq_ry * x;
+		let trx2y = 2 * this.sq_rx * y;
+
+		while (try2x < trx2y) {
+			if (p1_k < 0) {
+				x += 1;
+				y = y;
+				p1_k = p1_k + 2 * this.sq_ry * x + this.sq_ry;
+			} else {
+				x += 1;
+				y -= 1;
+				p1_k = p1_k + 2 * this.sq_ry * x - 2 * this.sq_rx * y + this.sq_ry;
+			}
+			this.getSymmetricPoints(x, y);
+			try2x = 2 * this.sq_ry * x;
+			trx2y = 2 * this.sq_rx * y;
+			this.x = x;
+			this.y = y;
+		}
+	}
+
+	setR2() {
+		this.p2_0 =
+			this.sq_ry * sq(this.x + 1 / 2) +
+			this.sq_rx * sq(this.y - 1) -
+			this.sq_rx * this.sq_ry;
+	}
+
+	drawR2() {
+		let x = this.x;
+		let y = this.y;
+		let p2_k = this.p2_0;
+
+		while (y != 0) {
+			if (p2_k < 0) {
+				x += 1;
+				y -= 1;
+				p2_k = p2_k + 2 * this.sq_ry * x - 2 * this.sq_rx * y + this.sq_rx;
+			} else {
+				x = x;
+				y -= 1;
+				p2_k = p2_k - 2 * this.sq_rx * y + this.sq_rx;
+			}
+			this.getSymmetricPoints(x, y);
+		}
+	}
+
+	writeCoordinate(x, y, r_x, r_y) {
+		textSize(18);
+		textStyle(NORMAL);
+		fill("#993300");
+		strokeWeight(1.1);
+		text(
+			"Center: (" +
+				x +
+				", " +
+				y +
+				")\nMajor Radius: " +
+				r_x +
+				"\nMinor Radius: " +
+				r_y,
+			x - 70,
+			y + r_y + 30
+		);
 	}
 }
