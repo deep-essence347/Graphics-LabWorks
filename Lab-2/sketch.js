@@ -14,6 +14,12 @@ function draw() {
 	bresenhamLine1.drawLine();
 	var bresenhamLine2 = new BresenhamLine(160, 204, 380, 458);
 	bresenhamLine2.drawLine();
+
+	/** Mid-Point Line Drawing Algorithm */
+	var mpLine1 = new MPLine(50, 70, 200, 320);
+	mpLine1.drawLine();
+	var mpLine2 = new MPLine(100, 120, 290, 210);
+	mpLine2.drawLine();
 }
 
 class Slope {
@@ -162,5 +168,68 @@ class BresenhamLine extends Slope {
 
 		this.x = x;
 		this.y = y;
+	}
+}
+
+class MPLine extends Slope {
+	constructor(x1, y1, x2, y2) {
+		super(x1, y1, x2, y2);
+	}
+
+	drawLine() {
+		stroke(0, 0, 0);
+		strokeWeight(1.5);
+		beginShape();
+		this.slope();
+		this.set();
+		this.initialCalculations();
+		this.constructLine();
+		endShape();
+	}
+
+	set() {
+		this.x = this.x1;
+		this.y = this.y1;
+
+		vertex(this.x, this.y);
+		this.writeCoordinate(this.x, this.y);
+	}
+
+	initialCalculations() {
+		this.dx = this.x2 - this.x1;
+		this.dy = this.y2 - this.y1;
+		if (this.m >= 1) this.p0 = this.dx - this.dy / 2;
+		else this.p0 = this.dy - this.dx / 2;
+	}
+
+	constructLine() {
+		let p_k = this.p0;
+		let x = this.x;
+		let y = this.y;
+
+		let count = 0;
+		if (this.m >= 1) count = this.dy;
+		else count = this.dx;
+
+		for (let k = 0; k < count; k++) {
+			if (p_k < 0) {
+				if (this.m >= 1) {
+					x = x;
+					y += 1;
+					p_k = p_k + this.dx;
+				} else {
+					x += 1;
+					y = y;
+					p_k = p_k + this.dy;
+				}
+			} else {
+				x += 1;
+				y += 1;
+				if (this.m >= 1) p_k = p_k + this.dx - this.dy;
+				else p_k = p_k + this.dy - this.dx;
+			}
+			vertex(x, y);
+		}
+		this.writeCoordinate(x, y);
 	}
 }
