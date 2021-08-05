@@ -6,16 +6,16 @@ function draw() {
 	background(220);
 
 	/** Digital Differential Analyzer */
-	// var ddaLine = new DDALine(100, 60, 360, 190);
-	// ddaLine.drawLine();
+	var ddaLine = new DDALine(100, 60, 360, 190);
+	ddaLine.drawLine();
 
 	/** Bresenham Line Drawing Algorithm */
-	// var bresenhamLine1 = new BresenhamLine(160, 120, 365, 300);
-	// bresenhamLine1.drawLine();
-	// var bresenhamLine2 = new BresenhamLine(160, 204, 380, 458);
-	// bresenhamLine2.drawLine();
+	var bresenhamLine1 = new BresenhamLine(160, 120, 365, 300);
+	bresenhamLine1.drawLine();
+	var bresenhamLine2 = new BresenhamLine(160, 204, 380, 458);
+	bresenhamLine2.drawLine();
 
-	// /** Mid-Point Line Drawing Algorithm */
+	/** Mid-Point Line Drawing Algorithm */
 	var mpLine1 = new MPLine(50, 70, 200, 320);
 	mpLine1.drawLine();
 	var mpLine2 = new MPLine(100, 120, 290, 210);
@@ -58,12 +58,10 @@ class DDALine extends Slope {
 	drawLine() {
 		stroke(0, 0, 0);
 		strokeWeight(1.5);
-		beginShape();
 		this.slope();
 		this.calculateStepsize();
 		this.calculateIncrement();
 		this.constructLine();
-		endShape();
 	}
 
 	/** Calculates `stepSize` based on `dx` and `dy` */
@@ -85,12 +83,12 @@ class DDALine extends Slope {
 		var x = this.x1;
 		var y = this.y1;
 
-		vertex(x, y);
+		point(x, y);
 		this.writeCoordinate(x, y);
 		for (var i = 0; i < this.stepSize; i++) {
 			x = x + this.x_inc;
 			y = y + this.y_inc;
-			vertex(x, y);
+			point(x, y);
 		}
 		this.writeCoordinate(x, y);
 	}
@@ -111,19 +109,17 @@ class BresenhamLine extends Slope {
 	drawLine() {
 		stroke(0, 0, 0);
 		strokeWeight(1.5);
-		beginShape();
 		this.slope();
 		this.set();
 		this.initialCalculations();
 		this.constructLine();
-		endShape();
 		this.writeCoordinate(this.x, this.y);
 	}
 
 	set() {
 		this.x = this.x1;
 		this.y = this.y1;
-		vertex(this.x, this.y);
+		point(this.x, this.y);
 		this.writeCoordinate(this.x, this.y);
 	}
 
@@ -163,7 +159,7 @@ class BresenhamLine extends Slope {
 				else p_i = p_i + this.twice_delY - this.twice_delX;
 			}
 
-			vertex(x, y);
+			point(x, y);
 		}
 
 		this.x = x;
@@ -179,25 +175,21 @@ class MPLine extends Slope {
 	drawLine() {
 		stroke(0, 0, 0);
 		strokeWeight(1.5);
-		beginShape();
 		this.slope();
 		this.set();
 		this.initialCalculations();
 		this.constructLine();
-		endShape();
 	}
 
 	set() {
 		this.x = this.x1;
 		this.y = this.y1;
 
-		vertex(this.x, this.y);
+		point(this.x, this.y);
 		this.writeCoordinate(this.x, this.y);
 	}
 
 	initialCalculations() {
-		this.dx = this.x2 - this.x1;
-		this.dy = this.y2 - this.y1;
 		if (this.m >= 1) this.p0 = this.dx - this.dy / 2;
 		else this.p0 = this.dy - this.dx / 2;
 	}
@@ -228,7 +220,7 @@ class MPLine extends Slope {
 				if (this.m >= 1) p_k = p_k + this.dx - this.dy;
 				else p_k = p_k + this.dy - this.dx;
 			}
-			vertex(x, y);
+			point(x, y);
 		}
 		this.writeCoordinate(x, y);
 	}
