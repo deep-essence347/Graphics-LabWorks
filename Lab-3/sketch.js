@@ -5,8 +5,11 @@ function setup() {
 function draw() {
 	background(220);
 
+	/** Mid-Point Circle Drawing Algorithm */
 	let circle = new MPCircle(200, 200, 111);
 	circle.drawCircle();
+
+	/** Mid-Point Ellipse Drawing Algorithm */
 	let ellipse = new MPEllipse(250, 250, 140, 90);
 	ellipse.drawEllipse();
 }
@@ -139,9 +142,9 @@ class MPEllipse extends SymmetricPoints {
 			this.getSymmetricPoints(x, y);
 			try2x = 2 * this.sq_ry * x;
 			trx2y = 2 * this.sq_rx * y;
-			this.x = x;
-			this.y = y;
 		}
+		this.x = x;
+		this.y = y;
 	}
 
 	setR2() {
