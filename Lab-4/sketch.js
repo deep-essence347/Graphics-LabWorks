@@ -5,12 +5,16 @@ function setup() {
 function draw() {
 	background(220);
 
+	let s = new Shapes();
+	s.writeLegend();
+
 	// ?Mark only one function at a time as uncommented
-	// translation();
-	// rotation();
-	// scaling();
-	// reflection();
-	// shear();
+	// translation(); //triangle
+	// rotation(); //rectangle
+	// scaling(); //triangle
+	// reflection(); //line
+	// shear(); //rectangle
+	noLoop();
 }
 
 function translation() {
@@ -29,7 +33,7 @@ function scaling() {
 }
 
 function reflection() {
-	let r = new Reflection("xy");
+	let r = new Reflection("y");
 	r.performReflection();
 }
 
@@ -40,9 +44,9 @@ function shear() {
 
 /**
  *
- * @param {Array<Array<Number>>} a
- * @param {Array<Numer>} b
- * @returns Product of the matrices
+ * @param {Array<Array<Number>>} a m*n matrix
+ * @param {Array<Numer>} b n*1 matrix
+ * @returns Product of the matrices (m*1)
  */
 function multiplyMatrices(a, b) {
 	let result = new Array(a.length);
@@ -64,28 +68,28 @@ function multiplyMatrices(a, b) {
 
 /**
  *
- * @param {Array<Array<Number>>} t_mat Transformation Matrix
- * @param {Array<Array<Number>>} a Matrix to be transformed
- * @returns Transformed matrix
+ * @param {Array<Array<Number>>} t_mat 3*3 Transformation Matrix
+ * @param {Array<Array<Number>>} a m*3 Matrix to be transformed
+ * @returns m*3 Transformed matrix
  */
 function transformShape(t_mat, a) {
-	let transformedCoordinates = [];
+	let transformedMatrix = [];
 	a.forEach((e) => {
 		let newRow = multiplyMatrices(t_mat, e);
-		transformedCoordinates.push(newRow);
+		transformedMatrix.push(newRow);
 	});
-	return transformedCoordinates;
+	return transformedMatrix;
 }
 
 class Shapes {
 	/**
 	 *
-	 * @param {Array} a Matrix with row length 2
+	 * @param {Array} a 2*n Matrix
 	 */
 	drawLine(a) {
 		if (a.length < 2) {
 			print("Matrix length is not valid to draw a line");
-			return false;
+			return;
 		}
 		strokeWeight(3);
 		beginShape();
@@ -96,7 +100,7 @@ class Shapes {
 
 	/**
 	 *
-	 * @param {Array} a Matrix with row Length 3
+	 * @param {Array} a 3*n Matrix
 	 */
 	drawTriangle(a) {
 		if (a.length < 3) {
@@ -114,7 +118,7 @@ class Shapes {
 
 	/**
 	 *
-	 * @param {Array} a Matrix with row length 4
+	 * @param {Array} a 4*n Matrix
 	 */
 	drawQuad(a) {
 		if (a.length < 4) {
@@ -129,6 +133,26 @@ class Shapes {
 		vertex(a[2][0], a[2][1]);
 		vertex(a[3][0], a[3][1]);
 		endShape(CLOSE);
+	}
+
+	writeText(value, x, y) {
+		textSize(16);
+		noStroke();
+		fill("black");
+		text(value, x, y);
+	}
+
+	drawPoint(color, x, y) {
+		stroke(color);
+		strokeWeight(10);
+		point(x, y);
+	}
+
+	writeLegend() {
+		this.drawPoint("black", 400, 400);
+		this.writeText("Original 2D Shape", 415, 405);
+		this.drawPoint("red", 400, 430);
+		this.writeText("Transformed 2D Shape", 415, 435);
 	}
 }
 
@@ -234,7 +258,7 @@ class Scale extends Shapes {
 		this.drawShape(this.mat);
 		this.scaling_mat = [
 			[this.sf[0], 0, 0],
-			[0, this.sf[0], 0],
+			[0, this.sf[1], 0],
 			[0, 0, 1],
 		];
 	}
@@ -248,7 +272,7 @@ class Scale extends Shapes {
 class Reflection extends Shapes {
 	/**
 	 *
-	 * @param {String} reflectionAxis `x` for `X-Axis`, `y` for `Y-Axis`, `o` for `Origin`, `xy` for `x=y`
+	 * @param {String} reflectionAxis `x` for `X-Axis`, `y` f	or `Y-Axis`, `xy` for `x=y`, Defaults to `Origin`
 	 */
 	constructor(reflectionAxis) {
 		super();
@@ -322,6 +346,10 @@ class Reflection extends Shapes {
 }
 
 class Shear extends Shapes {
+	/**
+	 *
+	 * @param {String} shearAxis `y` for Shear on `Y-Axis`, Defaults to `X-Axis`.
+	 */
 	constructor(shearAxis) {
 		super();
 		this.mat = [
@@ -348,13 +376,6 @@ class Shear extends Shapes {
 	initial() {
 		this.drawShape(this.mat);
 		switch (this.shearAxis) {
-			case "x":
-				this.shearing_mat = [
-					[1, this.sh[0], 0],
-					[0, 1, 0],
-					[0, 0, 1],
-				];
-				break;
 			case "y":
 				this.shearing_mat = [
 					[1, 0, 0],
@@ -363,6 +384,11 @@ class Shear extends Shapes {
 				];
 				break;
 			default:
+				this.shearing_mat = [
+					[1, this.sh[0], 0],
+					[0, 1, 0],
+					[0, 0, 1],
+				];
 				break;
 		}
 	}
