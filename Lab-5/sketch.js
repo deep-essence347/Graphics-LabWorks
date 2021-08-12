@@ -5,8 +5,10 @@ function setup() {
 function draw() {
 	background(220);
 
-	let lb = new LiangBarsky(115, 145, 350, 500);
-	lb.clipLine();
+	// let lb = new LiangBarsky(115, 145, 350, 500);
+	// lb.clipLine();
+	let cs = new CohenSutherLand(115, 100, 350, 500);
+	cs.clipLine();
 	noLoop();
 }
 
@@ -52,6 +54,124 @@ class Setup {
 		this.xw_max = max(xw);
 		this.yw_min = min(yw);
 		this.yw_max = max(yw);
+	}
+}
+
+class Region extends Setup {
+	constructor(x1, y1, x2, y2) {
+		super(150, 150, 450, 450);
+		this.x1 = x1;
+		this.y1 = y1;
+		this.x2 = x2;
+		this.y2 = y2;
+		this.regionCodes = this.calculateCodes();
+	}
+
+	calculateCodes() {
+		let x = [this.x1, this.x2];
+		let y = [this.y1, this.y2];
+		let regionCodes = [];
+		for (const i of [0, 1]) {
+			let r = this.regionCode(x[i], y[i]);
+			regionCodes.push(r);
+		}
+		return regionCodes;
+	}
+
+	regionCode(x, y) {
+		let r = [0, 0, 0, 0];
+
+		if (y > this.yw_max) r[0] = 1;
+		else if (y < this.yw_min) r[1] = 1;
+
+		if (x > this.xw_max) r[2] = 1;
+		else if (x < this.xw_min) r[3] = 1;
+		return r;
+	}
+}
+
+class CohenSutherLand extends Region {
+	constructor(x1, y1, x2, y2) {
+		super(x1, y1, x2, y2);
+		this.m = (this.y2 - this.y1) / (this.x2 - this.x1);
+	}
+
+	clipLine() {
+		this.writeCoordinates();
+		this.drawLine();
+		this.regionCodes = this.calculateCodes();
+		this.conditions();
+		this.drawLine(true);
+		this.writeCoordinates(true);
+	}
+
+	writeCoordinates(isClipped) {
+		writeCoordinates(this.x1, this.y1, this.x2, this.y2, isClipped);
+	}
+
+	drawLine(isClipped) {
+		drawLine(this.x1, this.y1, this.x2, this.y2, isClipped);
+	}
+
+	conditions() {
+		let codes = this.regionCodes;
+		if (codes[0].join("") == "0000" && codes[1].join("") == "0000") {
+			print("The line is trivially accepted.");
+		} else {
+			let op = this.and(codes[0], codes[1]);
+			if (op == "0000") {
+				this.clipping();
+			} else {
+				print("The line is trivially rejected.");
+			}
+		}
+	}
+
+	and(a, b) {
+		let result = [];
+		for (const i of [0, 1, 2, 3]) {
+			result.push(a[i] * b[i]);
+		}
+		return result.join("");
+	}
+
+	clipping() {
+		let x = [this.x1, this.x2];
+		let y = [this.y1, this.y2];
+		let codes = this.regionCodes;
+
+		for (const i of [0, 1]) {
+			if (codes[i].join("") != "0000") {
+				let newCoordinates = this.calculateNewPoints(x[i], y[i], codes[i]);
+				x[i] = newCoordinates[0];
+				y[i] = newCoordinates[1];
+			}
+		}
+		this.x1 = x[0];
+		this.x2 = x[1];
+		this.y1 = y[0];
+		this.y2 = y[1];
+	}
+
+	calculateNewPoints(x_i, y_i, code) {
+		let xw = 0;
+		let yw = 0;
+		let x = x_i;
+		let y = y_i;
+		if (code[3] == 1) {
+			x = this.xw_min;
+			y = y_i + floor(this.m * (x - x_i));
+		} else if (code[2] == 1) {
+			x = this.xw_max;
+			y = y_i + floor(this.m * (x - x_i));
+		} else if (code[1] == 1) {
+			y = this.yw_min;
+			x = x_i + floor((y - y_i) / this.m);
+		} else if (code[0] == 1) {
+			y = this.yw_max;
+			x = x_i + floor((y - y_i) / this.m);
+		}
+		return [x, y];
 	}
 }
 
