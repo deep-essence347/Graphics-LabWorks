@@ -6,14 +6,14 @@ function draw() {
 	background(220);
 
 	var cuboid = [
-		[50, 50, 50, 1],
-		[150, 50, 50, 1],
-		[150, 150, 50, 1],
-		[50, 150, 50, 1],
 		[50, 50, 150, 1],
 		[50, 150, 150, 1],
 		[150, 150, 150, 1],
 		[150, 50, 150, 1],
+		[50, 50, 50, 1],
+		[150, 50, 50, 1],
+		[150, 150, 50, 1],
+		[50, 150, 50, 1],
 	];
 
 	var pyramid = [
@@ -24,10 +24,10 @@ function draw() {
 		[50, 0, 50, 1],
 	];
 
-	// let t = new Translation(pyramid, [-50, -50, 100]);
+	// let t = new Translation(pyramid, [-80, -130, 60]);
 	// t.performTranslation();
 
-	// let r = new Rotation(cuboid, "x", 0);
+	// let r = new Rotation(cuboid, "y", 50);
 	// r.performRotation();
 
 	// let s = new Scale(pyramid, [1.8, 2.0, 1.2]);
@@ -130,16 +130,16 @@ class Shapes {
 		text(value, x, y);
 	}
 
-	drawPoint(color, x, y) {
+	drawvertex(color, x, y) {
 		stroke(color);
 		strokeWeight(100);
-		point(x, y);
+		vertex(x, y);
 	}
 
 	writeLegend() {
-		this.drawPoint("black", 400, 400);
+		this.drawvertex("black", 400, 400);
 		this.writeText("Original 2D Shape", 415, 405);
-		this.drawPoint("red", 400, 40);
+		this.drawvertex("red", 400, 40);
 		this.writeText("Transformed 2D Shape", 415, 435);
 	}
 }
@@ -237,7 +237,7 @@ class Rotation extends Shapes {
 			this.rotation_mat,
 			this.coordinateMatrix
 		);
-		translate(0, -1000);
+		translate(0, -120, 0);
 		this.drawShape(rotatedCoordinates, true);
 	}
 }
