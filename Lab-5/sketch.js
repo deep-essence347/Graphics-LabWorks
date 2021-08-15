@@ -7,7 +7,7 @@ function draw() {
 
 	// let lb = new LiangBarsky(115, 145, 350, 500);
 	// lb.clipLine();
-	let cs = new CohenSutherLand(115, 100, 350, 500);
+	let cs = new CohenSutherLand(200, 300, 420, 500);
 	cs.clipLine();
 	noLoop();
 }
@@ -101,7 +101,6 @@ class CohenSutherLand extends Region {
 		this.drawLine();
 		this.regionCodes = this.calculateCodes();
 		this.conditions();
-		this.drawLine(true);
 		this.writeCoordinates(true);
 	}
 
@@ -151,11 +150,10 @@ class CohenSutherLand extends Region {
 		this.x2 = x[1];
 		this.y1 = y[0];
 		this.y2 = y[1];
+		this.drawLine(true);
 	}
 
 	calculateNewPoints(x_i, y_i, code) {
-		let xw = 0;
-		let yw = 0;
 		let x = x_i;
 		let y = y_i;
 		if (code[3] == 1) {
