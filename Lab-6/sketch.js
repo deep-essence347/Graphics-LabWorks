@@ -23,11 +23,10 @@ function draw() {
 		[0, 100, 100, 1],
 		[50, 0, 50, 1],
 	];
-
 	// let t = new Translation(pyramid, [-80, -130, 60]);
 	// t.performTranslation();
 
-	// let r = new Rotation(cuboid, "y", 50);
+	// let r = new Rotation(cuboid, { rotationAxis: "y", rotationAngle: 50 });
 	// r.performRotation();
 
 	// let s = new Scale(pyramid, [1.8, 2.0, 1.2]);
@@ -77,12 +76,16 @@ function transformShape(t_mat, a) {
 
 class Shapes {
 	constructor() {
-		// this.writeLegend();
+		this.writeLegend();
 	}
-
+	/**
+	 *
+	 * @param {Array<Array<Number>} coordinateMatrix 8*4 matrix
+	 */
 	cuboid(coordinateMatrix) {
 		let a = coordinateMatrix;
 		noFill();
+		strokeWeight(2);
 		beginShape();
 		vertex(a[0][0], a[0][1], a[0][2]);
 		vertex(a[1][0], a[1][1], a[1][2]);
@@ -103,9 +106,14 @@ class Shapes {
 		endShape(CLOSE);
 	}
 
+	/**
+	 *
+	 * @param {Array<Array<Number>} coordinateMatrix 5*4 matrix
+	 */
 	pyramid(coordinateMatrix) {
 		let a = coordinateMatrix;
 		noFill();
+		strokeWeight(2);
 		beginShape();
 		vertex(a[0][0], a[0][1], a[0][2]);
 		vertex(a[1][0], a[1][1], a[1][2]);
@@ -122,25 +130,16 @@ class Shapes {
 		endShape();
 	}
 
-	writeText(value, x, y) {
-		textSize(16);
-		noStroke();
-		fill("black");
-		textFont(inconsolate);
-		text(value, x, y);
-	}
-
-	drawvertex(color, x, y) {
-		stroke(color);
-		strokeWeight(100);
-		vertex(x, y);
+	writeText(value, color, x, y) {
+		let newText = createP(value);
+		newText.style("font-size", "22px");
+		newText.style("color", color);
+		newText.position(x, y);
 	}
 
 	writeLegend() {
-		this.drawvertex("black", 400, 400);
-		this.writeText("Original 2D Shape", 415, 405);
-		this.drawvertex("red", 400, 40);
-		this.writeText("Transformed 2D Shape", 415, 435);
+		this.writeText("Original 2D Shape", "black", 350, 355);
+		this.writeText("Transformed 2D Shape", "red", 350, 385);
 	}
 }
 
@@ -182,7 +181,7 @@ class Translation extends Shapes {
 }
 
 class Rotation extends Shapes {
-	constructor(coordinateMatrix, rotationAxis, rotationAngle) {
+	constructor(coordinateMatrix, { rotationAxis = "x", rotationAngle = 0 }) {
 		super();
 		this.coordinateMatrix = coordinateMatrix;
 		this.axis = rotationAxis;
