@@ -23,6 +23,7 @@ function draw() {
 		[0, 100, 100, 1],
 		[50, 0, 50, 1],
 	];
+
 	// let t = new Translation(pyramid, [-80, -130, 60]);
 	// t.performTranslation();
 
@@ -103,7 +104,7 @@ class Shapes {
 		vertex(a[1][0], a[1][1], a[1][2]);
 		vertex(a[7][0], a[7][1], a[7][2]);
 		vertex(a[4][0], a[4][1], a[4][2]);
-		endShape(CLOSE);
+		endShape();
 	}
 
 	/**
@@ -138,8 +139,8 @@ class Shapes {
 	}
 
 	writeLegend() {
-		this.writeText("Original 2D Shape", "black", 350, 355);
-		this.writeText("Transformed 2D Shape", "red", 350, 385);
+		this.writeText("Original 3D Shape", "black", 350, 355);
+		this.writeText("Transformed 3D Shape", "red", 350, 385);
 	}
 }
 
@@ -202,6 +203,15 @@ class Rotation extends Shapes {
 	initial() {
 		this.drawShape(this.coordinateMatrix);
 		switch (this.axis) {
+			case "x":
+				this.rotation_mat = [
+					[1, 0, 0, 0],
+					[0, cos(this.angle), -sin(this.angle), 0],
+					[0, sin(this.angle), cos(this.angle), 0],
+					[0, 0, 0, 1],
+				];
+				break;
+
 			case "y":
 				this.rotation_mat = [
 					[cos(this.angle), 0, sin(this.angle), 0],
@@ -221,12 +231,7 @@ class Rotation extends Shapes {
 				break;
 
 			default:
-				this.rotation_mat = [
-					[1, 0, 0, 0],
-					[0, cos(this.angle), -sin(this.angle), 0],
-					[0, sin(this.angle), cos(this.angle), 0],
-					[0, 0, 0, 1],
-				];
+				print("Invalid Rotation Axis.");
 				break;
 		}
 	}
