@@ -17,8 +17,6 @@ let tlx, tly;
 
 let correct, incorrect, warning;
 
-let count = 0;
-
 function preload() {
 	correct = loadImage("assets/correct.png");
 	incorrect = loadImage("assets/incorrect.png");
@@ -43,6 +41,7 @@ function draw() {
 	}
 
 	signalsAndActions();
+	createResetButton();
 }
 
 function setInitials() {
@@ -105,28 +104,36 @@ function showState(signalState, actionState) {
 	const size = 50;
 	let img;
 	let message;
+	let lowerLimit = tlx - tlx / 3.5,
+		upperLimit = lowerLimit + lowerLimit / 6;
 
-	if (signalState == actionState) img = correct;
-	else {
-		message = "Signal and action states do not match.";
-		img = incorrect;
-	}
-
-	if (actionState == "X") {
-		if (vx <= 130 || vx > 170) {
-			message = "Vehicle stopped too far from traffic signal.";
+	if (signalState && actionState) {
+		if (signalState == actionState) img = correct;
+		else {
+			message = "Signal and action states do not match.";
 			img = incorrect;
 		}
-	} else if (actionState == "T" && signalState == "O") {
-		if (vx <= 130 || vx > 170) {
-			message = "Vehicle is too slow.";
-			img = warning;
+
+		if (vx <= lowerLimit || vx > upperLimit) {
+			if (actionState == "X") {
+				message = "Vehicle stopped outside signal zone.";
+				img = incorrect;
+			} else if (actionState == "T" && signalState == "T") {
+				message = "Vehicle too slow outside signal zone.";
+				img = warning;
+			} else if (actionState == "O") img = correct;
+		} else {
+			if (actionState == "T" && signalState == "O") {
+				message = "Vehicle too slow on Green Light.";
+				img = warning;
+			} else if (actionState == "O" && signalState == "T") {
+				message = "Vehicle too fast on Yellow Light.";
+				img = warning;
+			}
 		}
-	} else if (actionState == "O" && signalState == "T") {
-		if (vx > 130 && vx <= 170) {
-			message = "Vehicle is too fast.";
-			img = warning;
-		}
+	} else {
+		message = "Current State Unresolved.";
+		img = warning;
 	}
 
 	image(img, x, y, size, size);
@@ -427,7 +434,6 @@ function keyPressed() {
 	} else if (keyCode === LEFT_ARROW) {
 		speed = actions.SLOW.speed;
 	} else if (keyCode === DOWN_ARROW) {
-		print("VX: " + vx);
 		speed = actions.MOTIONLESS.speed;
 	}
 
@@ -443,7 +449,18 @@ function keyPressed() {
 }
 
 function doubleClicked() {
+	reset();
+}
+
+function reset() {
 	setInitials();
 	redraw();
 	loop();
+}
+
+function createResetButton() {
+	let button = createButton("Reset");
+	button.position(windowWidth - 150, 30);
+	button.mousePressed(reset);
+	button.size(120, 40);
 }
