@@ -5,8 +5,8 @@ const signals = {
 };
 
 const actions = {
-	FAST: { speed: 3, action: "MOVING", state: "O" },
-	SLOW: { speed: 1, action: "SLOWING DOWN", state: "T" },
+	FAST: { speed: 4, action: "MOVING", state: "O" },
+	SLOW: { speed: 2, action: "SLOWING DOWN", state: "T" },
 	MOTIONLESS: { speed: 0, action: "STOPPED", state: "X" },
 };
 
@@ -14,8 +14,10 @@ let currentLight;
 let speed;
 let vx, vy;
 let tlx, tly;
+let isParked;
 
 let correct, incorrect, warning;
+let lowerLimit, upperLimit;
 
 function preload() {
 	correct = loadImage("assets/correct.png");
@@ -30,36 +32,39 @@ function setup() {
 
 function draw() {
 	background(220);
+
 	drawRoad();
 	drawTrafficLight();
+	drawTrafficZone();
 	drawCar();
+	createResetButton();
 	moveCar();
 
 	if (vx >= windowWidth - 175) {
 		speed = actions.MOTIONLESS.speed;
+		isParked = true;
 		noLoop();
 	}
 
 	signalsAndActions();
-	createResetButton();
 }
 
 function setInitials() {
 	currentLight = signals.GREEN.color;
 	speed = 0;
+	isParked = true;
 	vx = 0;
 	vy = 185;
 	tlx = windowWidth / 2;
 	tly = 10;
+
+	let l = tlx - tlx / 3.5;
+	let u = l + l / 6;
+
+	lowerLimit = l + l / 3.5;
+	upperLimit = u + (u - l) * 2;
 }
 
-/**
- *
- * @param {String} text
- * @param {Number} x
- * @param {Number} y
- * @param {String} color
- */
 function writeText(content, x, y, scaleFactor, hasBackground, isTitle) {
 	push();
 	let size = 10;
@@ -104,36 +109,43 @@ function showState(signalState, actionState) {
 	const size = 50;
 	let img;
 	let message;
-	let lowerLimit = tlx - tlx / 3.5,
-		upperLimit = lowerLimit + lowerLimit / 6;
+	let vxs = vx + 170;
 
-	if (signalState && actionState) {
-		if (signalState == actionState) img = correct;
-		else {
-			message = "Signal and action states do not match.";
-			img = incorrect;
-		}
-
-		if (vx <= lowerLimit || vx > upperLimit) {
-			if (actionState == "X") {
-				message = "Vehicle stopped outside signal zone.";
-				img = incorrect;
-			} else if (actionState == "T" && signalState == "T") {
-				message = "Vehicle too slow outside signal zone.";
-				img = warning;
-			} else if (actionState == "O") img = correct;
-		} else {
-			if (actionState == "T" && signalState == "O") {
-				message = "Vehicle too slow on Green Light.";
-				img = warning;
-			} else if (actionState == "O" && signalState == "T") {
-				message = "Vehicle too fast on Yellow Light.";
-				img = warning;
-			}
-		}
+	if (isParked) {
+		message = "The car is parked.";
+		img = correct;
 	} else {
-		message = "Current State Unresolved.";
-		img = warning;
+		if (signalState && actionState) {
+			if (signalState == actionState) img = correct;
+			else {
+				message = "Signal and action states do not match.";
+				img = incorrect;
+			}
+
+			if (vxs <= lowerLimit || vxs > upperLimit) {
+				if (actionState == "X") {
+					message = "Vehicle stopped outside signal zone.";
+					img = incorrect;
+				} else if (actionState == "T") {
+					message = "Vehicle too slow outside signal zone.";
+					img = warning;
+				} else if (actionState == "O") {
+					message = undefined;
+					img = correct;
+				}
+			} else {
+				if (actionState == "T" && signalState == "O") {
+					message = "Vehicle too slow on Green Light.";
+					img = warning;
+				} else if (actionState == "O" && signalState == "T") {
+					message = "Vehicle too fast on Yellow Light.";
+					img = warning;
+				}
+			}
+		} else {
+			message = "Current State Unresolved.";
+			img = warning;
+		}
 	}
 
 	image(img, x, y, size, size);
@@ -207,6 +219,15 @@ function drawTrafficLight() {
 	noStroke();
 	fill(100, 100, 100);
 	rect(tlx + 10, 81, 10, 151);
+}
+
+function drawTrafficZone() {
+	push();
+	stroke("grey");
+	strokeWeight(2);
+	line(lowerLimit, 0, lowerLimit, 232);
+	line(upperLimit, 0, upperLimit, 232);
+	pop();
 }
 
 function drawCar() {
@@ -430,8 +451,10 @@ function moveCar() {
 
 function keyPressed() {
 	if (keyCode === RIGHT_ARROW) {
+		isParked = false;
 		speed = actions.FAST.speed;
 	} else if (keyCode === LEFT_ARROW) {
+		isParked = false;
 		speed = actions.SLOW.speed;
 	} else if (keyCode === DOWN_ARROW) {
 		speed = actions.MOTIONLESS.speed;
@@ -446,6 +469,8 @@ function keyPressed() {
 			currentLight = signals.YELLOW.color;
 		}
 	}
+
+	if (key == "r") reset();
 }
 
 function doubleClicked() {
